@@ -25,8 +25,12 @@ class Config:
         self.telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID')
         
         # 監控參數
-        self.query_interval_minutes = int(os.getenv('QUERY_INTERVAL_MINUTES', '30'))
+        self.query_interval_minutes = int(os.getenv('QUERY_INTERVAL_MINUTES', '30'))  # V1 版本使用
         self.funding_rate_threshold = float(os.getenv('FUNDING_RATE_THRESHOLD', '0.0'))
+        
+        # V2 參數
+        self.monitor_interval_minutes = int(os.getenv('MONITOR_INTERVAL_MINUTES', '1'))
+        self.summary_interval_minutes = int(os.getenv('SUMMARY_INTERVAL_MINUTES', '60'))
         
     def validate(self):
         """驗證必要的配置是否存在"""
@@ -51,6 +55,12 @@ class Config:
         if self.query_interval_minutes <= 0:
             raise ValueError("QUERY_INTERVAL_MINUTES 必須大於 0")
             
+        if self.monitor_interval_minutes <= 0:
+            raise ValueError("MONITOR_INTERVAL_MINUTES 必須大於 0")
+            
+        if self.summary_interval_minutes <= 0:
+            raise ValueError("SUMMARY_INTERVAL_MINUTES 必須大於 0")
+            
     def __str__(self):
         """返回配置摘要（隱藏敏感資訊）"""
         return f"""
@@ -60,4 +70,6 @@ class Config:
 - Telegram: {'已設定' if self.telegram_bot_token else '未設定'}
 - 查詢間隔: {self.query_interval_minutes} 分鐘
 - 費率閾值: {self.funding_rate_threshold}
+- 監控間隔: {self.monitor_interval_minutes} 分鐘
+- 彙整間隔: {self.summary_interval_minutes} 分鐘
         """.strip()
